@@ -5952,7 +5952,6 @@ a")
         self.checkScript(func, inputs, optimize=True)
 
     def test_math_ops(self):
-<<<<<<< HEAD
         def checkMathWrap(func_name, num_args=1, is_float=True, **args):
             if is_float:
                 checkMath(func_name, num_args, True, **args)
@@ -5967,17 +5966,14 @@ a")
         float_vals = [inf, NaN, 0.0, 1.0, 2.2, -1.0, -0.0, -2.2, -inf, 1, 0, 2]
         int_vals = list(range(-5, 5, 1)) + [mx_int + 5, mx_int * 2, mn_int - 5, mn_int * 2]
 
-        def checkMath(func_name, num_args, is_float=True, ret_type="float", debug=False, vals=None, args_type=None):
-=======
-        def checkMathWrap(func_name, num_args=1, is_float=True, ret_type="float", debug=False, vals=None):
+        def checkMathWrap(func_name, num_args=1, is_float=True, **args):
             if is_float:
-                checkMath(func_name, num_args, True, ret_type, debug, vals)
-                checkMath(func_name, num_args, False, ret_type, debug, vals)
+                checkMath(func_name, num_args, True, **args)
+                checkMath(func_name, num_args, False, **args)
             else:
-                checkMath(func_name, num_args, is_float, ret_type, debug, vals)
+                checkMath(func_name, num_args, is_float, **args)
 
-        def checkMath(func_name, num_args, is_float=True, ret_type="float", debug=False, vals=None):
->>>>>>> 5fec433c4... Added factorial
+        def checkMath(func_name, num_args, is_float=True, ret_type="float", debug=False, vals=None, args_type=None):
             funcs_template = dedent('''
             def func(a, b):
                 # type: {args_type} -> {ret_type}
@@ -6031,7 +6027,7 @@ a")
                                           .format(func_name=func_name, a=a, b=b, resf=resf, resfs=resfs))
 
 
-        unary_float_ops = ["log", "log1p", "log10", "exp", "sqrt", "gamma", "lgamma", "erf", "erfc", "expm1", "fabs", "acos", "asin", "atan", "cos", "sin", "tan", "asinh", "atanh", "acosh", "sinh", "cosh", "tanh"]
+        unary_float_ops = ["log", "log1p", "log10", "exp", "sqrt", "gamma", "lgamma", "erf", "erfc", "expm1", "fabs", "acos", "asin", "atan", "cos", "sin", "tan", "asinh", "atanh", "acosh", "sinh", "cosh", "tanh", "degrees", "radians"]
         binary_float_ops = ["atan2", "fmod", "remainder", "copysign"]
         for op in unary_float_ops:
             checkMathWrap(op, 1)
@@ -6043,26 +6039,14 @@ a")
         checkMath("isnan", 1, ret_type="bool")
         checkMath("isfinite", 1, ret_type="bool")
         checkMath("isinf", 1, ret_type="bool")
+        checkMath("ldexp", 2, is_float=False, ret_type="float", args_type="(float, int)", vals=[(i, j) for i in float_vals for j in range(-10, 10)])
         checkMath("pow", 2, is_float=False, ret_type="int")
         checkMath("pow", 2, is_float=True, ret_type="float")
         if not PY2:
             checkMathWrap("floor", ret_type="int")
             checkMathWrap("ceil", ret_type="int")
             checkMathWrap("gcd", 2, is_float=False, ret_type="int")
-        checkMathWrap("factorial", 1, is_float=False, ret_type="int", vals=list(range(-2, 10)))
-
-    @unittest.skipIf(PY2, "Requires python 3")
-    def test_math_gcd(self):
-        def test_gcd(x, y):
-            # type: (int, int) -> int
-            return math.gcd(x, y)
-
-        max_int = 2147483647
-        min_int = -2147483647 - 1
-        int_vals = list(range(-5, 5, 1)) + [max_int + 5, max_int * 2, min_int - 5, min_int * 2]
-        vals = [(i, j) for i in int_vals for j in int_vals]
-        for inputs in vals:
-            self.checkScript(test_gcd, inputs)
+        checkMathWrap("factorial", 1, is_float=False, ret_type="int", vals=[(i, 0) for i in range(-2, 10)])
 
     def test_if_nest_while(self):
         def func(a, b):
