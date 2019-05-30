@@ -6021,16 +6021,20 @@ a")
 
 
         unary_float_ops = ["log", "log1p", "log10", "exp", "sqrt", "gamma", "lgamma", "erf", "erfc", "expm1", "fabs", "acos", "asin", "atan", "cos", "sin", "tan"]
+        binary_float_ops = ["atan2", "fmod", "remainder", "copysign"]
         for op in unary_float_ops:
             checkMathWrap(op)
+        for op in binary_float_ops:
+            checkMathWrap(op, 2)
 
-        checkMathWrap("copysign", 2)
+        checkMath("modf", 1, ret_type="Tuple[float, float]")
         checkMath("pow", 2, is_float=False, ret_type="int")
         checkMath("pow", 2, is_float=True, ret_type="float")
         if not PY2:
             checkMathWrap("floor", ret_type="int")
             checkMathWrap("ceil", ret_type="int")
             checkMathWrap("gcd", 2, is_float=False, ret_type="int")
+
 
 
     @unittest.skipIf(PY2, "Requires python 3")
